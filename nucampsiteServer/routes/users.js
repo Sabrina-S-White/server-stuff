@@ -7,7 +7,8 @@ const authenticate = require('../authenticate')
 
 usersRouter
   .route('/')
-  .get(cors.corsWithOptions, 
+  .get(
+    cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
     function (req, res, next) {
@@ -20,6 +21,21 @@ usersRouter
         .catch((err) => next(err))
     }
   )
+
+usersRouter
+  .route('/facebook/token')
+  .get(passport.authenticate('facebook-token'), (req, res) => {
+    if (req.user) {
+      const token = authenticate.getToken({ _id: req.user._id })
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/json')
+      res.json({
+        success: true,
+        token: token,
+        status: 'You are successfully logged in!',
+      })
+    }
+  })
 
 usersRouter.route('/signup').post(cors.corsWithOptions, (req, res) => {
   User.register(
@@ -55,16 +71,18 @@ usersRouter.route('/signup').post(cors.corsWithOptions, (req, res) => {
   )
 })
 
-usersRouter.route('/login').post(cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
-  const token = authenticate.getToken({ _id: req.user._id })
-  res.statusCode = 200
-  res.setHeader('Content-Type', 'application/json')
-  res.json({
-    success: true,
-    token: token,
-    status: 'You are successfully logged in!',
+usersRouter
+  .route('/login')
+  .post(cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
+    const token = authenticate.getToken({ _id: req.user._id })
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'application/json')
+    res.json({
+      success: true,
+      token: token,
+      status: 'You are successfully logged in!',
+    })
   })
-})
 
 usersRouter.route('/logout').get(cors.corsWithOptions, (req, res, next) => {
   if (req.session) {
