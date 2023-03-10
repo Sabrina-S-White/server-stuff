@@ -1,0 +1,15 @@
+campsites/640ab1d407dbf53e39064d25/comments
+
+{
+"rating": 5,
+"text": "test"
+}
+
+{
+  "username": "admin",
+  "password": "password
+}
+
+campsites/640ab1d407dbf53e39064d25/comments/640acb58be5d294634b7170b
+
+&& (campsite.comments.id === req.user._id)
